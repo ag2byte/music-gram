@@ -1,0 +1,22 @@
+{% extends "layout.html" %} {% load static%} {% block title %}New{%endblock%}
+
+<!-- <p></p> -->
+{% block main %}
+<div class="container w-75 mt-5 mb-5">
+  <div class="form-group">
+    <input
+      type="text"
+      class="form-control"
+      name=""
+      id=""
+      placeholder="search song"
+      autocomplete="off"
+    />
+    <textarea
+      class="mt-5 form-control"
+      placeholder="Caption your music"
+      autocomplete="off"
+    ></textarea>
+  </div>
+</div>
+{% endblock %}
