@@ -1,0 +1,42 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{% block title %}{% endblock %}</title>
+    <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl"
+    crossorigin="anonymous"
+  />
+  <!-- <a href="https://icons8.com/icon/i6fZC6wuprSu/home">Home icon by Icons8</a> -->
+    {% block links %}{% endblock %} 
+   
+    
+    {% block scripts %}{% endblock %}
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <span class="navbar-brand">Musicgram</span>
+            
+                <a href="{% url 'feed' %}" ><img id = 'home'src="https://img.icons8.com/fluent-systems-regular/24/000000/home.png"/> </a>
+                <a href="{% url 'addpost' %}"><img id = 'addpost'src="https://img.icons8.com/fluent-systems-regular/24/000000/plus.png"/> </a>
+                <a href=""> <img id = 'bookmark'src="https://img.icons8.com/fluent-systems-regular/24/000000/bookmark-ribbon--v1.png"/></a>
+                <a > <img id = 'profile' src="https://img.icons8.com/fluent-systems-regular/24/000000/user.png"/></a>
+            
+            <button class="btn btn-outline-info navbar-right " type="submit" onclick="location.href=`{% url 'index' %}`">Log Out</button>
+        </form>
+      </div>
+        </div>
+    </nav>
+
+    <main>
+        {% block main %}
+        {% endblock %}
+    </main>
+  </body>
+</html>
