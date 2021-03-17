@@ -14,19 +14,21 @@
     <title>Document</title>
   </head>
   <body>
-    {% if errormessage %}
-
-    <script>
-      // this must be a toast message , not just alert
-      alert(`{{ errormessage }}`);
-    </script>
-    {% endif %}
     <div class="container col-5 mt-5">
       <div class="card">
         <div class="card-body">
-          <h4 class="card-title">Sign in</h4>
+          <h4 class="card-title">Register here</h4>
           <form class="form-group" method="POST" autocomplete="off">
             {% csrf_token %}
+            <input
+              type="text"
+              class="form-control mb-4"
+              name="displayName"
+              id=""
+              aria-describedby="helpId"
+              placeholder="Display Name"
+              autocomplete="off"
+            />
             <input
               type="email"
               class="form-control mb-4"
@@ -43,6 +45,7 @@
               id=""
               aria-describedby="helpId"
               placeholder="password"
+              autocomplete="off"
             />
 
             <button
@@ -50,7 +53,7 @@
               class="btn btn-outline-success mt-4"
               onclick="location.href=` {% url 'feed'  %}`"
             >
-              Submit
+              Success
             </button>
           </form>
         </div>
