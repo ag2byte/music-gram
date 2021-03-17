@@ -1,7 +1,8 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
-
+from django.contrib import auth
+# from django.contrib.auth.decorators import login_required
 
 import pyrebase
 
@@ -20,24 +21,44 @@ firebaseconfig = {
 }
 
 firebase = pyrebase.initialize_app(firebaseconfig)
-auth = firebase.auth()
+firebaseauth = firebase.auth()
+
 
 
 # Create your views here.
 def index(request):
     if request.method == 'POST':
         email = request.POST['email']
-        password = request.POST['password']
+        password = request.POST['password'] # signin info
         print(email, password)
         try:
-            user = auth.sign_in_with_email_and_password(email, password)
+            user = firebaseauth.sign_in_with_email_and_password(email, password) #firebase authentication
             if user:
                 print(user['email'])
+                print('sessionid:', user['idToken'])
+                session_id = user['idToken']
+                request.session['uid'] = str(session_id)  # creating a session
+                return HttpResponseRedirect(reverse('feed'))
+
         except:
-            print('Invalid credentials')
+            errormessage = 'Invalid Credentials'
+            return render(request,'index.html',{'errormessage':errormessage}) 
         
 
     return render(request, 'index.html')
+
+def logout(request):
+
+    currentUser = firebaseauth.current_user
+    if(currentUser):
+        try:
+            del request.session['uid']
+            # auth.logout(request)
+        except KeyError:
+            pass
+        return HttpResponseRedirect(reverse('index'))
+    else:
+        return HttpResponse('You cannot access this url now')
 
 def signup(request):
     if request.method == 'POST':
@@ -45,16 +66,35 @@ def signup(request):
         email = request.POST['email']
         password = request.POST['password']
         print({displayName}, {email}, {password})
-        user = auth.create_user_with_email_and_password(email, password)
+        firebaseauth.create_user_with_email_and_password(email, password)
+        
         # user.update({
         #     'displayName':displayName
         # })
     return render(request,'signup.html')
 
 def feed(request):
-    return render(request, 'feed.html')
+    currentUser = firebaseauth.current_user
+    if(currentUser):
+        return render(request, 'feed.html')
+    else:
+        return HttpResponse('You need to sign in to see this page')
 
 def addpost(request):
-    return render(request, 'addpost.html')
+    currentUser = firebaseauth.current_user
+    if currentUser:
+        return render(request, 'addpost.html')
+    else:
+        return HttpResponse('You need to sign in to see this page')
 def bookmarks(request):
-    return render(request,'bookmarks.html')
+    currentUser = firebaseauth.current_user
+    if currentUser:
+        return render(request, 'bookmarks.html')
+    else:
+        return HttpResponse('You need to sign in to see this page')
+
+
+def testfunction(request):
+    # this is just a function for testing somethings 
+    print(request.session)
+    return  HttpResponse('hellotester')

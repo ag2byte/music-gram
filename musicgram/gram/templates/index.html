@@ -14,6 +14,13 @@
     <title>Document</title>
   </head>
   <body>
+    {% if errormessage %}
+
+    <script>
+      // this must be a toast message , not just alert
+      alert(`{{ errormessage }}`);
+    </script>
+    {% endif %}
     <div class="container col-5 mt-5">
       <div class="card">
         <div class="card-body">
@@ -43,7 +50,7 @@
               class="btn btn-outline-success mt-4"
               onclick="location.href=` {% url 'feed'  %}`"
             >
-              Success
+              Submit
             </button>
           </form>
         </div>
