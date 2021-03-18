@@ -53,6 +53,7 @@ def logout(request):
     if(currentUser):
         try:
             del request.session['uid']
+            # firebaseauth.signOut()
             # auth.logout(request)
         except KeyError:
             pass
@@ -97,4 +98,5 @@ def bookmarks(request):
 def testfunction(request):
     # this is just a function for testing somethings 
     print(request.session)
+    print(firebaseauth.current_user['email'])
     return  HttpResponse('hellotester')
