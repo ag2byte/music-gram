@@ -97,6 +97,10 @@ def bookmarks(request):
 
 def testfunction(request):
     # this is just a function for testing somethings 
-    print(request.session)
+    # if request.session['uid']:
+    for key, value in request.session.items():
+        print('{} => {}'.format(key, value))
+    # else:
+    #     print('loggged out')
     print(firebaseauth.current_user['email'])
     return  HttpResponse('hellotester')
