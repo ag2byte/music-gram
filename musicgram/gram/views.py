@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
@@ -35,7 +37,7 @@ def index(request):
             user = firebaseauth.sign_in_with_email_and_password(email, password) #firebase authentication
             if user:
                 print(user['email'])
-                print('sessionid:', user['idToken'])
+                # print('sessionid:', user['idToken'])
                 session_id = user['idToken']
                 request.session['uid'] = str(session_id)  # creating a session
                 return HttpResponseRedirect(reverse('feed'))
@@ -71,7 +73,7 @@ def signup(request):
         
         # adding into database
         id = suid.uuid()
-        data = {'displayName':displayName, 'email':email,'followers':0, 'following':0, 'posts': 0 }
+        data = {'displayName':displayName, 'email':email, 'posts': 0 } # 'followers':0, 'following':0,
         
         print(id, data)
         firebasedb.child('users').child(id).set(data)
@@ -106,17 +108,29 @@ def bookmarks(request):
 
 
 def testfunction(request):
-    # this is just a function for testing somethings 
-    # if request.session['uid']:
-    # for key, value in request.session.items():
-    #     print('{} => {}'.format(key, value))
-    # # else:
-    # #     print('loggged out')
-    # print(firebaseauth.current_user['email'])
-    # id = suid.uuid()
-    # data = {'displayName':'Abhi', 'email':'abhigyangautam98@gmail.com','followers':0, 'following':0, 'posts': 0 }
-    # # firebasedb.child()
-    # print(id, data)
-    # firebasedb.child('users').child(id).set(data)
     
+  
+    # working demo of following feature in db
+    # user1 = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
+    # user1_id = list(user1)[0]  # this is the id finally
+    # user1_name = list(user1.values())[0].get('displayName')
+    # user2 = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
+    # user2_id = list(user2)[0]
+    # user2_name = list(user2.values())[0].get('displayName')
+    # print('user1det:', user1)
+    # print('user1name:',user1_name )
+    # print('user1id', user1_id)
+    # print('user2det:',user2)
+    # print('user2id :', user2_id)
+    # print('user2name:',user2_name )
+    
+    # adding Abhi as the follower of Gojou
+    # firebasedb.child('followedby').child(user2_id).set({user1_id: user1_name})
+    # firebasedb.child('follows').child(user1_id).set({user2_id: user2_name})
+
+    # {REMAINING}: update values in followers and followers field in users children
+    # end of db following feature
+    
+    
+  
     return  HttpResponse('hellotester')
