@@ -111,24 +111,24 @@ def testfunction(request):
     
   
     # working demo of following feature in db
-    # user1 = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
-    # user1_id = list(user1)[0]  # this is the id finally
-    # user1_name = list(user1.values())[0].get('displayName')
-    # user2 = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
-    # user2_id = list(user2)[0]
-    # user2_name = list(user2.values())[0].get('displayName')
-    # print('user1det:', user1)
-    # print('user1name:',user1_name )
-    # print('user1id', user1_id)
-    # print('user2det:',user2)
-    # print('user2id :', user2_id)
-    # print('user2name:',user2_name )
+    # follower = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
+    # follower_id = list(follower)[0]  # this is the id finally
+    # follower_name = list(follower.values())[0].get('displayName')
+    # followed = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
+    # followed_id = list(followed)[0]
+    # followed_name = list(followed.values())[0].get('displayName')
+    # print('followerdet:', follower)
+    # print('followername:',follower_name )
+    # print('followerid', follower_id)
+    # print('followed:',followed)
+    # print('followedid :', followed_id)
+    # print('followedname:',followed_name )
     
-    # adding Abhi as the follower of Gojou
-    # firebasedb.child('followedby').child(user2_id).set({user1_id: user1_name})
-    # firebasedb.child('follows').child(user1_id).set({user2_id: user2_name})
+    # # adding Abhi as the follower of Gojou
 
-    # {REMAINING}: update values in followers and followers field in users children
+    # firebasedb.child('users').child(followed_id).child('followers').set({follower_id:follower_name})# adding follower for followed
+    # firebasedb.child('users').child(follower_id).child('following').set({followed_id:followed_name})# adding follwed for follower
+    
     # end of db following feature
     
     
