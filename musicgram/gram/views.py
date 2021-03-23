@@ -107,29 +107,37 @@ def bookmarks(request):
         return HttpResponse('You need to sign in to see this page')
 
 
+def follow():
+    # this function is incomplete still as it will be connected to the frontend and the names' Abhi' and ' Gojou' will come from the frontend
+    # however this is the basic function of following 
+
+    follower = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
+    follower_id = list(follower)[0]  # this is the id finally
+    follower_name = list(follower.values())[0].get('displayName')
+    followed = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
+    followed_id = list(followed)[0]
+    followed_name = list(followed.values())[0].get('displayName')
+    print('followerdet:', follower)
+    print('followername:',follower_name )
+    print('followerid', follower_id)
+    print('followed:',followed)
+    print('followedid :', followed_id)
+    print('followedname:',followed_name )
+    
+    # adding Abhi as the follower of Gojou
+
+    firebasedb.child('users').child(followed_id).child('followers').set({follower_id:follower_name})# adding follower for followed
+    firebasedb.child('users').child(follower_id).child('following').set({followed_id:followed_name})# adding follwed for follower
+    
+    # end of db following feature
+
+    
+    
+    
+
 def testfunction(request):
     
   
-    # working demo of following feature in db
-    # follower = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
-    # follower_id = list(follower)[0]  # this is the id finally
-    # follower_name = list(follower.values())[0].get('displayName')
-    # followed = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
-    # followed_id = list(followed)[0]
-    # followed_name = list(followed.values())[0].get('displayName')
-    # print('followerdet:', follower)
-    # print('followername:',follower_name )
-    # print('followerid', follower_id)
-    # print('followed:',followed)
-    # print('followedid :', followed_id)
-    # print('followedname:',followed_name )
-    
-    # # adding Abhi as the follower of Gojou
-
-    # firebasedb.child('users').child(followed_id).child('followers').set({follower_id:follower_name})# adding follower for followed
-    # firebasedb.child('users').child(follower_id).child('following').set({followed_id:followed_name})# adding follwed for follower
-    
-    # end of db following feature
     
     
   
