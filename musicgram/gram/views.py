@@ -5,7 +5,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
 import pprint
-from .spotify_api import SpotifyAPI,milli
+# from .spotify_api import SpotifyAPI,milli
+
+# from spotify_api import SpotifyAPI, milli
 
 import shortuuid as suid
 import sys
@@ -122,6 +124,7 @@ def addpost(request):
         return render(request, 'addpost.html', {'link':final_result_list})
     else:
         return HttpResponse('You need to sign in to see this page')
+
 def bookmarks(request):
     currentUser = firebaseauth.current_user
     if currentUser:
