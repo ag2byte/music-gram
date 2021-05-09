@@ -30,6 +30,8 @@ firebaseconfig = {
 
 firebase = pyrebase.initialize_app(firebaseconfig)
 firebaseauth = firebase.auth()
+final_result = {}
+final_result_dict = {}
 firebasedb = firebase.database()
 # firebase part end
 
@@ -101,25 +103,9 @@ def feed(request):
 
 def addpost(request):
     currentUser = firebaseauth.current_user
-
-    spotify1 = SpotifyAPI(client_id, client_secret)
-    spotify1.perform_auth()
-    result = spotify1.search({"track":"Dynamite","artist":"BTS"},search_type="track")
-    total_no_result = len(result["tracks"]["items"])
-    final_result_list=[]
-    final_result = {}
-    for i in range(total_no_result//2):
-        final_result["name"] =  result["tracks"]["items"][i]['name']
-        final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
-        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
-        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
-        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
-        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
-        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
-        final_result_list.append(final_result)
         # pprint(final_result)
     if currentUser:
-        return render(request, 'addpost.html', {'link':final_result_list})
+        return render(request, 'addpost.html')
     else:
         return HttpResponse('You need to sign in to see this page')
 def bookmarks(request):
@@ -155,7 +141,26 @@ def follow():
     # end of db following feature
 
     
-    
+def search_song(request):
+    print(request.POST)
+    spotify1 = SpotifyAPI(client_id, client_secret)
+    spotify1.perform_auth()
+    name =  request.POST['song_name']
+    result = spotify1.search({"track":name,"artist":"BTS"},search_type="track")
+    total_no_result = len(result["tracks"]["items"])
+    for i in range(0,total_no_result//2):
+        final_result["name"] =  result["tracks"]["items"][i]['name']
+        final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
+        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
+        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
+        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
+        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
+        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
+        final_result_dict[i]=final_result
+        print(final_result_dict)
+        print('\n')
+
+    return render(request, "addpost.html",{'link':final_result_dict})
     
 
 def testfunction(request):
