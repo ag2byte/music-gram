@@ -3,15 +3,26 @@
 <!-- <p></p> -->
 {% block main %}
 <div class="container w-75 mt-5 mb-5">
-  <div class="form-group">
+  <form action = "search_song" method = "POST" class="form-group">
+    {% csrf_token %} 
     <input
       type="text"
       class="form-control"
-      name=""
+      name="song_name"
       id=""
       placeholder="search song"
       autocomplete="off"
     />
+    
+
+
+    <!-- <form action = "search_song" method = "POST">
+      {% csrf_token %} 
+      <label for="song_name">Search Song: </label>
+      <input id="song_name" type="text" name="song_name">
+      <input type="submit" value="OK">
+  </form> -->
+
     <textarea
       class="mt-5 form-control"
       placeholder="Caption your music"
