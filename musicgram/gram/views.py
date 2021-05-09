@@ -4,9 +4,15 @@ from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
+import pprint
+from .spotify_api import SpotifyAPI,milli
 
 import shortuuid as suid
+import sys
 import pyrebase
+
+client_id = '46d058fd7fd24823a92ec77bcd794c23'
+client_secret = '3e43a088cfb9476fa0a1436e9dc8614b'
 
 "firebase part : DO NOT MESS WITH THIS"
 firebaseconfig = {
@@ -95,8 +101,25 @@ def feed(request):
 
 def addpost(request):
     currentUser = firebaseauth.current_user
+
+    spotify1 = SpotifyAPI(client_id, client_secret)
+    spotify1.perform_auth()
+    result = spotify1.search({"track":"Dynamite","artist":"BTS"},search_type="track")
+    total_no_result = len(result["tracks"]["items"])
+    final_result_list=[]
+    final_result = {}
+    for i in range(total_no_result//2):
+        final_result["name"] =  result["tracks"]["items"][i]['name']
+        final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
+        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
+        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
+        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
+        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
+        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
+        final_result_list.append(final_result)
+        # pprint(final_result)
     if currentUser:
-        return render(request, 'addpost.html')
+        return render(request, 'addpost.html', {'link':final_result_list})
     else:
         return HttpResponse('You need to sign in to see this page')
 def bookmarks(request):
