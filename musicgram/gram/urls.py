@@ -10,5 +10,6 @@ urlpatterns = [
     path('logout',views.logout,name='logout'),
     path('bookmarks', views.bookmarks, name='bookmarks'),
     path('testfunction', views.testfunction, name='testfunction'),
+    path('search_song', views.search_song, name='search_song'),
     
 ]
