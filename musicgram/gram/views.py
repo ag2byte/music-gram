@@ -7,7 +7,7 @@ from django.contrib import auth
 import pprint
 # from .spotify_api import SpotifyAPI,milli
 
-from .spotify_api import SpotifyAPI, milli
+from .spotify_api import SpotifyAPI, milli, searchSong
 
 import shortuuid as suid
 import sys
@@ -145,28 +145,10 @@ def follow():
 
     
 def search_song(request):
-    spotify1 = SpotifyAPI(client_id, client_secret)
-    spotify1.perform_auth()
+    
     name =  request.POST['song_name']
     print(f'song name: {name} \n')
-    result = spotify1.search({"track":name},search_type="track")
-    # print(f'result : {result} \n ')
-    total_no_result = len(result["tracks"]["items"])
-    final_result_list = []
-    final_result = {}
-    for i in range(0,total_no_result//2):
-        final_result["name"] =  result["tracks"]["items"][i]['name']
-        final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
-        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
-        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
-        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
-        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
-        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
-        print(f"final_result: {final_result} \n")
-        final_result_list.append(final_result.copy())
-        # print(final_result_dict)
-        print('\n')
-
+    final_result_list = searchSong(name)
     return render(request, "addpost.html",{'link': final_result_list})
     
 
