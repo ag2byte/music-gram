@@ -5,7 +5,9 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
 from django.contrib import auth
 import pprint
-from .spotify_api import SpotifyAPI,milli
+# from .spotify_api import SpotifyAPI,milli
+
+from .spotify_api import SpotifyAPI, milli
 
 import shortuuid as suid
 import sys
@@ -92,28 +94,29 @@ def signup(request):
     return render(request,'signup.html')
 
 def feed(request):
-    currentUser = firebaseauth.current_user
+    # currentUser = firebaseauth.current_user
 
     # displayName = firebasedb.child('users').order_by_child('email').equal_to(currentUser['email']).get()
     # print(displayName.val())
-    if(currentUser):
-        return render(request, 'feed.html')
-    else:
-        return HttpResponse('You need to sign in to see this page')
+    # if(currentUser):
+    return render(request, 'feed.html')
+    # else:
+    #     return HttpResponse('You need to sign in to see this page')
 
 def addpost(request):
-    currentUser = firebaseauth.current_user
+    # currentUser = firebaseauth.current_user
         # pprint(final_result)
-    if currentUser:
-        return render(request, 'addpost.html')
-    else:
-        return HttpResponse('You need to sign in to see this page')
+    # if currentUser:
+    return render(request, 'addpost.html')
+    # else:
+    #     return HttpResponse('You need to sign in to see this page')
+
 def bookmarks(request):
-    currentUser = firebaseauth.current_user
-    if currentUser:
-        return render(request, 'bookmarks.html')
-    else:
-        return HttpResponse('You need to sign in to see this page')
+    # currentUser = firebaseauth.current_user
+    # if currentUser:
+    return render(request, 'bookmarks.html')
+    # else:
+    #     return HttpResponse('You need to sign in to see this page')
 
 
 def follow():
@@ -142,25 +145,29 @@ def follow():
 
     
 def search_song(request):
-    print(request.POST)
     spotify1 = SpotifyAPI(client_id, client_secret)
     spotify1.perform_auth()
     name =  request.POST['song_name']
-    result = spotify1.search({"track":name,"artist":"BTS"},search_type="track")
+    print(f'song name: {name} \n')
+    result = spotify1.search({"track":name},search_type="track")
+    # print(f'result : {result} \n ')
     total_no_result = len(result["tracks"]["items"])
+    final_result_list = []
+    final_result = {}
     for i in range(0,total_no_result//2):
         final_result["name"] =  result["tracks"]["items"][i]['name']
         final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
-        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
-        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
-        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
-        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
-        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
-        final_result_dict[i]=final_result
-        print(final_result_dict)
+        # final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
+        # final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
+        # final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
+        # final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
+        # final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
+        print(f"final_result: {final_result} \n")
+        final_result_list.append(final_result)
+        # print(final_result_dict)
         print('\n')
 
-    return render(request, "addpost.html",{'link':final_result_dict})
+    return render(request, "addpost.html",{'link': final_result_list})
     
 
 def testfunction(request):
