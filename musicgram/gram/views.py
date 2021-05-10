@@ -157,13 +157,13 @@ def search_song(request):
     for i in range(0,total_no_result//2):
         final_result["name"] =  result["tracks"]["items"][i]['name']
         final_result["artist"] = result["tracks"]["items"][i]['artists'][0]['name']
-        # final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
-        # final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
-        # final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
-        # final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
-        # final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
+        final_result["available_india"] = 'IN' in result["tracks"]["items"][i]['album']['available_markets']
+        final_result["images"] = result["tracks"]["items"][i]['album']['images'][0]['url']
+        final_result["link"] =  result["tracks"]["items"][i]['external_urls']['spotify']
+        final_result["explicit"] = result["tracks"]["items"][i]["explicit"]
+        final_result["duration"] = milli(result["tracks"]["items"][i]["duration_ms"])
         print(f"final_result: {final_result} \n")
-        final_result_list.append(final_result)
+        final_result_list.append(final_result.copy())
         # print(final_result_dict)
         print('\n')
 
