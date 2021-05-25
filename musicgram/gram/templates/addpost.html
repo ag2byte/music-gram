@@ -1,5 +1,8 @@
-{% extends "layout.html" %} {% load static%} {% block title %}New{%endblock%}
+{% extends "layout.html" %} {% load static%} {% block title %}Add Post{%endblock%}
+{% block links %}
+<link href="{% static 'gram/css/addpost.css' %}" rel="stylesheet">
 
+{% endblock %}
 <!-- <p></p> -->
 {% block main %}
 <div class="container w-75 mt-5 mb-5">
@@ -16,20 +19,35 @@
     
 
 
-    <!-- <form action = "search_song" method = "POST">
-      {% csrf_token %} 
-      <label for="song_name">Search Song: </label>
-      <input id="song_name" type="text" name="song_name">
-      <input type="submit" value="OK">
-  </form> -->
-
     <textarea
       class="mt-5 form-control"
       placeholder="Caption your music"
       autocomplete="off"
     ></textarea>
 
-    {{link}}
+    
+
+       
+    
+    
+
+  
+      <div class="container">
+        {%  for item  in link  %}
+            {% if forloop.counter0|divisibleby:3 %} <div class="row text-center"> {%  endif %}
+              <div class="col-md-4"  >
+                  <div class="card resultsong" style = "width:12rem;cursor: pointer ">
+                      <img "card-img-top" src="{{ item.images }}" alt="">
+                      <div class="card-body">
+                        <span class ='card-title' style = "font-weight: bold">{{ item.name }}</span>
+                        <p class="card-text">{{ item.artist }}</p>
+
+                      </div><!-- card content -->
+                  </div><!-- card -->
+              </div><!-- col-md-4 -->
+        {%  if forloop.counter|divisibleby:3 or forloop.last %}</div><!-- row closing --><hr>{%  endif %}
+        {%  endfor %}
+     </div><!-- container -->
 
 
   </div>

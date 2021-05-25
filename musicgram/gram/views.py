@@ -149,6 +149,7 @@ def search_song(request):
     name =  request.POST['song_name']
     print(f'song name: {name} \n')
     final_result_list = searchSong(name)
+    print(final_result_list[0]['name'])
     return render(request, "addpost.html",{'link': final_result_list})
     
 
