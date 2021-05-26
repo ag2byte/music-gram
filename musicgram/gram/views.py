@@ -157,7 +157,7 @@ def search_song(request):
     
 @csrf_exempt
 def testfunction(request):
-    print(json.dumps(request.POST))
+    print(request.POST)
     return HttpResponse(json.dumps(request.POST))
     
    
