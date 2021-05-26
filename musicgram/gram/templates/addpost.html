@@ -1,12 +1,21 @@
-{% extends "layout.html" %} {% load static%} {% block title %}Add Post{%endblock%}
+{% extends "layout.html" %} 
+
+{% load static %} 
+{% block title %}Add Post{%endblock%}
 {% block links %}
 <link href="{% static 'gram/css/addpost.css' %}" rel="stylesheet">
 
 {% endblock %}
+
+{% block scripts %}
+
+<script src="{% static 'gram/js/addpost.js'%}"></script>
+{% endblock %}
 <!-- <p></p> -->
 {% block main %}
 <div class="container w-75 mt-5 mb-5">
-  <form action = "search_song" method = "POST" class="form-group">
+  <form action = "search_song" method = "POST" class="form-group"
+  >
     {% csrf_token %} 
     <input
       type="text"
@@ -15,35 +24,31 @@
       id=""
       placeholder="search song"
       autocomplete="off"
+      style= "margin-bottom: 20px;"
     />
-    
 
-
-    <textarea
-      class="mt-5 form-control"
-      placeholder="Caption your music"
-      autocomplete="off"
-    ></textarea>
-
-    
-
-       
-    
-    
-
-  
       <div class="container">
         {%  for item  in link  %}
             {% if forloop.counter0|divisibleby:3 %} <div class="row text-center"> {%  endif %}
-              <div class="col-md-4"  >
-                  <div class="card resultsong" style = "width:12rem;cursor: pointer ">
-                      <img "card-img-top" src="{{ item.images }}" alt="">
+              <div class="col-md-4 resultsong"  >
+                
+                  <div class="card" id="card{{forloop.counter0}}" onclick="clickSong(this.id)" 
+                  data-imglink = " {{item.images}} " 
+                      data-name = " {{item.name}}" 
+                      data-artist = "{{ item.artist }}"
+                      data-link = "{{item.link}}"
+                  style = "width:12rem;cursor: pointer ">
+                      <img class = "card-img-top" src="{{ item.images }}" alt="" 
+                      
+
+                      >
                       <div class="card-body">
-                        <span class ='card-title' style = "font-weight: bold">{{ item.name }}</span>
-                        <p class="card-text">{{ item.artist }}</p>
+                        <span class ='card-title' style = "font-weight: bold"  >{{ item.name }} </span>
+                        <p class="card-text" >{{ item.artist }}</p>
 
                       </div><!-- card content -->
                   </div><!-- card -->
+                
               </div><!-- col-md-4 -->
         {%  if forloop.counter|divisibleby:3 or forloop.last %}</div><!-- row closing --><hr>{%  endif %}
         {%  endfor %}

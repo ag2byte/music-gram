@@ -3,6 +3,7 @@ from collections import OrderedDict
 from django.shortcuts import render,redirect
 from django.http import HttpResponse, HttpResponseRedirect
 from django.urls import reverse
+from django.views.decorators.csrf import csrf_exempt
 from django.contrib import auth
 import pprint
 # from .spotify_api import SpotifyAPI,milli
@@ -12,6 +13,8 @@ from .spotify_api import SpotifyAPI, milli, searchSong
 import shortuuid as suid
 import sys
 import pyrebase
+
+import json
 
 client_id = '46d058fd7fd24823a92ec77bcd794c23'
 client_secret = '3e43a088cfb9476fa0a1436e9dc8614b'
@@ -152,11 +155,11 @@ def search_song(request):
     print(final_result_list[0]['name'])
     return render(request, "addpost.html",{'link': final_result_list})
     
-
+@csrf_exempt
 def testfunction(request):
+    print(json.dumps(request.POST))
+    return HttpResponse(json.dumps(request.POST))
     
-  
+   
+     
     
-    
-  
-    return  HttpResponse('hellotester')
