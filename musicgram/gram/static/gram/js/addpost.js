@@ -22,10 +22,11 @@ function clickSong(id) {
     .getAttribute("data-link");
 
   console.log(selecteddict);
+  console.log(JSON.stringify(selecteddict));
 
   fetch("/testfunction", {
     method: "POST",
-    body: JSON.stringify(selecteddict),
+    body: JSON.stringify({ value: selecteddict }),
 
     headers: {
       "Content-type": "application/json;",
@@ -37,4 +38,9 @@ function clickSong(id) {
     .then((text) => {
       console.log(text);
     });
+
+  // var xhr = new XMLHttpRequest();
+  // xhr.open("POST", "/testfunction", true);
+  // // xhr.setRequestHeader("Content-Type", "application/json");
+  // xhr.send("GEllo");
 }
