@@ -1,0 +1,15 @@
+{% extends "layout.html" %} {% load static %} {% block title %}Create new Post
+{%endblock%} {% block main %}
+
+<div class="form-group container w-75 mt-5 mb-5">
+  {% csrf_token %}
+  <input
+    type="text"
+    class="form-control"
+    placeholder="Caption your post"
+    autocomplete="off"
+    name="caption"
+  />
+</div>
+
+{% endblock %}
