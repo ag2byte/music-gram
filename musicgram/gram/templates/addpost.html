@@ -31,7 +31,7 @@
         {%  for item  in link  %}
             {% if forloop.counter0|divisibleby:3 %} <div class="row text-center"> {%  endif %}
               <div class="col-md-4 resultsong"  >
-                
+                <!-- <a href = "{% url 'createpost' %} " style="text-decoration: none;"> -->
                   <div class="card" id="card{{forloop.counter0}}" onclick="clickSong(this.id)" 
                   data-imglink = " {{item.images}} " 
                       data-name = " {{item.name}}" 
@@ -48,6 +48,7 @@
 
                       </div><!-- card content -->
                   </div><!-- card -->
+                  <!-- </a> -->
                 
               </div><!-- col-md-4 -->
         {%  if forloop.counter|divisibleby:3 or forloop.last %}</div><!-- row closing --><hr>{%  endif %}

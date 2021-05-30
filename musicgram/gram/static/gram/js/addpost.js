@@ -22,25 +22,23 @@ function clickSong(id) {
     .getAttribute("data-link");
 
   console.log(selecteddict);
-  console.log(JSON.stringify(selecteddict));
+  // console.log(JSON.stringify(selecteddict));
 
-  fetch("/testfunction", {
+  fetch("/addpost", {
     method: "POST",
     body: JSON.stringify({ value: selecteddict }),
 
     headers: {
       "Content-type": "application/json;",
     },
-  })
-    .then((res) => {
-      return res.text();
-    })
-    .then((text) => {
-      console.log(text);
-    });
+  }).then((res) => {
+    if (res.status == 201)
+      // all good
+      window.location.pathname = "/createpost";
+  });
 
   // var xhr = new XMLHttpRequest();
-  // xhr.open("POST", "/testfunction", true);
-  // // xhr.setRequestHeader("Content-Type", "application/json");
+  // xhr.open("POST", "/addpost", true);
+  // xhr.setRequestHeader("Content-Type", "application/json");
   // xhr.send("GEllo");
 }

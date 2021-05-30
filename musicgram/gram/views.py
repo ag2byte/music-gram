@@ -1,11 +1,13 @@
 from collections import OrderedDict
 
 from django.shortcuts import render,redirect
-from django.http import HttpResponse, HttpResponseRedirect
+from django.http import HttpResponse, HttpResponseRedirect,JsonResponse
 from django.urls import reverse
 from django.views.decorators.csrf import csrf_exempt
-from django.contrib import auth
+from django.contrib import auth,sessions
 import pprint
+
+from requests.adapters import HTTPResponse
 # from .spotify_api import SpotifyAPI,milli
 
 from .spotify_api import SpotifyAPI, milli, searchSong
@@ -53,6 +55,7 @@ def index(request):
                 # print('sessionid:', user['idToken'])
                 session_id = user['idToken']
                 request.session['uid'] = str(session_id)  # creating a session
+                # get displayName and id from the realtime  database and add to session for easier access
                 return HttpResponseRedirect(reverse('feed'))
 
         except:
@@ -105,10 +108,20 @@ def feed(request):
     return render(request, 'feed.html')
     # else:
     #     return HttpResponse('You need to sign in to see this page')
-
+@csrf_exempt
 def addpost(request):
     # currentUser = firebaseauth.current_user
         # pprint(final_result)
+    if request.method == 'POST':
+        song = json.loads(request.body.decode('utf-8'))['value']
+        print(" song in add post", song)
+        request.session['newpostsong'] = song
+        t = request.session['newpostsong']
+        print("t",t)
+        #  createpost(request)
+        return JsonResponse({},status = 201)
+
+
     # if currentUser:
     return render(request, 'addpost.html')
     # else:
@@ -121,6 +134,14 @@ def bookmarks(request):
     # else:
     #     return HttpResponse('You need to sign in to see this page')
 
+
+# @csrf_exempt
+def createpost(request):
+    print("hello")
+    song = request.session['newpostsong']
+    # print(request.session['newpostsong'])
+    print("song from createpost", song)
+    return render(request,'createpost.html')
 
 def follow():
     # this function is incomplete still as it will be connected to the frontend and the names' Abhi' and ' Gojou' will come from the frontend
@@ -157,8 +178,8 @@ def search_song(request):
     
 @csrf_exempt
 def testfunction(request):
-    print(request.POST)
-    return HttpResponse(json.dumps(request.POST))
+    print(json.loads(request.body.decode('utf-8')))
+    return HttpResponse(json.loads(request.body.decode('utf-8')))
     
    
      
