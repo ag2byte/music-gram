@@ -5,6 +5,7 @@
 {% block links %}
 <link href="{% static 'gram/css/addpost.css' %}" rel="stylesheet">
 
+
 {% endblock %}
 
 {% block scripts %}
@@ -13,13 +14,13 @@
 {% endblock %}
 <!-- <p></p> -->
 {% block main %}
-<div class="container w-75 mt-5 mb-5">
-  <form action = "search_song" method = "POST" class="form-group"
+<div class="container w-75 mt-5 mb-5 ">
+  <form action = "search_song" method = "POST" class="form-group "
   >
     {% csrf_token %} 
     <input
       type="text"
-      class="form-control"
+      class="form-control searchbar"
       name="song_name"
       id=""
       placeholder="search song"

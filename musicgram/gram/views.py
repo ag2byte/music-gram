@@ -8,6 +8,7 @@ from django.contrib import auth,sessions
 import pprint
 
 from requests.adapters import HTTPResponse
+from requests.api import post
 # from .spotify_api import SpotifyAPI,milli
 
 from .spotify_api import SpotifyAPI, milli, searchSong
@@ -15,7 +16,7 @@ from .spotify_api import SpotifyAPI, milli, searchSong
 import shortuuid as suid
 import sys
 import pyrebase
-
+import datetime
 import json
 
 client_id = '46d058fd7fd24823a92ec77bcd794c23'
@@ -47,14 +48,25 @@ def index(request):
     if request.method == 'POST':
         email = request.POST['email']
         password = request.POST['password'] # signin info
-        print(email, password)
+        # print(email, password)
         try:
             user = firebaseauth.sign_in_with_email_and_password(email, password) #firebase authentication
             if user:
                 print(user['email'])
                 # print('sessionid:', user['idToken'])
+                test = firebasedb.child("users").order_by_child('email').equal_to(user['email']).get()
+                request.session['useremail'] = user['email']
+                for i in test.each():
+                    print(i.key())
+                    request.session['userid'] = i.key()
+                    print(i.val())
+                    print(i.val()['displayName'])
+                    request.session['displayName'] = i.val()['displayName']
+                    
                 session_id = user['idToken']
                 request.session['uid'] = str(session_id)  # creating a session
+
+
                 # get displayName and id from the realtime  database and add to session for easier access
                 return HttpResponseRedirect(reverse('feed'))
 
@@ -67,17 +79,20 @@ def index(request):
 
 def logout(request):
 
-    currentUser = firebaseauth.current_user
-    if(currentUser):
-        try:
-            del request.session['uid']
-            # firebaseauth.signOut()
-            # auth.logout(request)
-        except KeyError:
-            pass
-        return HttpResponseRedirect(reverse('index'))
-    else:
+    # currentUser = firebaseauth.current_user
+    
+    try:
+        del request.session['uid']
+        del request.session['userid']
+        del request.session['displayName']
+        del request.session['useremail']
+                # firebaseauth.signOut()
+                # auth.logout(request)
+    except KeyError:
         return HttpResponse('You cannot access this url now')
+    return HttpResponseRedirect(reverse('index'))
+    
+        
 
 def signup(request):
     if request.method == 'POST':
@@ -100,32 +115,38 @@ def signup(request):
     return render(request,'signup.html')
 
 def feed(request):
-    # currentUser = firebaseauth.current_user
-
-    # displayName = firebasedb.child('users').order_by_child('email').equal_to(currentUser['email']).get()
-    # print(displayName.val())
-    # if(currentUser):
-    return render(request, 'feed.html')
-    # else:
-    #     return HttpResponse('You need to sign in to see this page')
+   
+    try:
+        # request.session['userid']):
+        posts = firebasedb.child("posts").get()
+        postlist = []
+        for item in posts.each():
+            postlist.append({item.key():item.val()})
+        # print(postlist)
+        # for dic in postlist:
+        #     for i in dic:
+        #         print(i,dic[i])
+        return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist})
+    except: 
+        return HttpResponse('You need to sign in to see this page')
 @csrf_exempt
 def addpost(request):
-    # currentUser = firebaseauth.current_user
-        # pprint(final_result)
-    if request.method == 'POST':
-        song = json.loads(request.body.decode('utf-8'))['value']
-        print(" song in add post", song)
-        request.session['newpostsong'] = song
-        t = request.session['newpostsong']
-        print("t",t)
-        #  createpost(request)
-        return JsonResponse({},status = 201)
+    try:
+        currentuser = request.session['userid']
+        if request.method == 'POST':
+            song = json.loads(request.body.decode('utf-8'))['value']
+            print(" song in add post", song)
+            request.session['newpostsong'] = song
+            t = request.session['newpostsong']
+            print("t",t)
+            #  createpost(request)
+            return JsonResponse({},status = 201)
 
 
-    # if currentUser:
-    return render(request, 'addpost.html')
-    # else:
-    #     return HttpResponse('You need to sign in to see this page')
+        # if currentUser:
+        return render(request, 'addpost.html')
+    except:
+        return HttpResponse('You need to sign in to see this page')
 
 def bookmarks(request):
     # currentUser = firebaseauth.current_user
@@ -137,11 +158,30 @@ def bookmarks(request):
 
 # @csrf_exempt
 def createpost(request):
-    print("hello")
-    song = request.session['newpostsong']
-    # print(request.session['newpostsong'])
-    print("song from createpost", song)
-    return render(request,'createpost.html')
+    try:
+        currentuser = request.session['userid']
+        song = request.session['newpostsong']
+        # print(request.session['newpostsong'])
+        print("song from createpost", song)
+        if request.method == 'POST':
+            caption = request.POST['caption']
+            id = suid.uuid()
+            data = {'displayName':request.session['displayName'], 
+                                            'caption':caption, 
+                                            'songname':song['songname'],
+                                            'artist':song['artist'],
+                                            'imagelink':song['imagelink'],
+                                            'songlink':song['songlink'],
+                                            'likes':0,
+                                            # 'datetime':datetime.datetime.now()
+                                             } 
+            print(id, data)
+            firebasedb.child('posts').child(id).set(data)
+            return HttpResponseRedirect(reverse('feed'))
+
+        return render(request,'createpost.html',{'song':song})
+    except:
+        return HttpResponse("Unauthorised to access the url")
 
 def follow():
     # this function is incomplete still as it will be connected to the frontend and the names' Abhi' and ' Gojou' will come from the frontend
@@ -176,11 +216,19 @@ def search_song(request):
     print(final_result_list[0]['name'])
     return render(request, "addpost.html",{'link': final_result_list})
     
-@csrf_exempt
+# @csrf_exempt
 def testfunction(request):
-    print(json.loads(request.body.decode('utf-8')))
-    return HttpResponse(json.loads(request.body.decode('utf-8')))
+    posts = firebasedb.child("posts").get()
+    postlist = []
+    for item in posts.each():
+       postlist.append({item.key():item.val()})
+    # print(postlist)
+    for dic in postlist:
+        for i in dic:
+            print(i,dic[i])
     
+    
+    return HttpResponse("hello sir")
    
      
     

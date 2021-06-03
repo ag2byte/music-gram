@@ -1,5 +1,9 @@
 {% extends "layout.html" %} {% load static%} {% block title %}Home{%endblock%}
-{% block main %}
+{% block links %}
+<link href="{% static 'gram/css/feed.css' %}" rel="stylesheet" />
 
-<span> Hello {username}</span>
+{% endblock %} {% block main %}
+
+<span class="displayname m-4"> Hi, {{ username }}</span>
+
 {% endblock %}
