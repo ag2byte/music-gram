@@ -1,15 +1,39 @@
 {% extends "layout.html" %} {% load static %} {% block title %}Create new Post
 {%endblock%} {% block main %}
 
-<div class="form-group container w-75 mt-5 mb-5">
-  {% csrf_token %}
-  <input
-    type="text"
-    class="form-control"
-    placeholder="Caption your post"
-    autocomplete="off"
-    name="caption"
-  />
+<div class="card container mt-5 p-2" style="width: 60rem">
+  <div class="row">
+    <div class="col-sm-4">
+      <img
+        src="{{ song.imagelink }}"
+        style="width: 17rem; height: 17rem"
+        alt=""
+      />
+    </div>
+
+    <div class="w-60 mt-5 mb-5 col-sm-8">
+      <span style="font-family: 'Poppins'; font-size: 30px; font-weight: bold"
+        >{{ song.songname }}-{{song.artist}}</span
+      >
+      <form class="form-group" method="POST" autocomplete="off">
+        {% csrf_token %}
+        <input
+          type="text"
+          class="form-control"
+          placeholder="Caption your post"
+          autocomplete="off"
+          name="caption"
+        />
+        <button
+          class="btn btn-outline-dark mt-4"
+          type="submit"
+          onclick="location.href=` {% url 'createpost'  %}`"
+        >
+          Post
+        </button>
+      </form>
+    </div>
+  </div>
 </div>
 
 {% endblock %}

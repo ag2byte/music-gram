@@ -5,3 +5,9 @@
   border: 1px solid #cccccc;
   background-color: #cad5e2;
 }
+
+.searchbar {
+  height: 120px;
+  font-size: 100px;
+  font-family: "Poppins";
+}
