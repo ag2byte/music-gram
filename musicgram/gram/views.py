@@ -82,9 +82,9 @@ def logout(request):
     # currentUser = firebaseauth.current_user
     
     try:
-        del request.session['uid']
-        del request.session['userid']
-        del request.session['displayName']
+        del request.session['uid'] 
+        del request.session['userid'] 
+        del request.session['displayName'] 
         del request.session['useremail']
                 # firebaseauth.signOut()
                 # auth.logout(request)
@@ -122,12 +122,14 @@ def feed(request):
         postlist = []
         for item in posts.each():
             postlist.append({item.key():item.val()})
+        print(postlist)
         # print(postlist)
         # for dic in postlist:
         #     for i in dic:
         #         print(i,dic[i])
         return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist})
-    except: 
+    except Exception as e: 
+        print(e)
         return HttpResponse('You need to sign in to see this page')
 @csrf_exempt
 def addpost(request):
@@ -218,17 +220,42 @@ def search_song(request):
     
 # @csrf_exempt
 def testfunction(request):
-    posts = firebasedb.child("posts").get()
-    postlist = []
-    for item in posts.each():
-       postlist.append({item.key():item.val()})
-    # print(postlist)
-    for dic in postlist:
-        for i in dic:
-            print(i,dic[i])
+    print(request.session['displayName'])
+        
     
     
     return HttpResponse("hello sir")
    
      
+def profile(request,displayname):
+    # get profile for a displayname 
+    user = firebasedb.child("users").order_by_child("displayName").equal_to(displayname).get()
     
+    followers, following = 0,0
+
+    toFollow = True
+
+    if request.session['displayName'] == displayname:
+        toFollow = False
+    for i in user.each():
+        
+        if 'followers' in i.val():
+            followers = len(i.val()['followers'])
+            # check if there is a need to follow:
+
+            if request.session['userid'] in i.val()['followers'].keys():
+                # either is it own profile or already followed
+                print("same name")
+                toFollow = False
+        if 'following' in i.val():
+            following = len(i.val()['following'])
+
+    posts = firebasedb.child("posts").order_by_child("displayName").equal_to(displayname).get()
+    postlist = []
+    for item in posts.each():
+            postlist.append({item.key():item.val()})
+
+
+    print(i.key())
+
+    return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist})

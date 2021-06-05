@@ -1,7 +1,18 @@
-.displayname {
-  font-family: "Poppins";
-  font-size: 35px;
+.poppin {
+  font-family: Poppins;
+  font-style: normal;
   font-weight: bold;
+}
+.username {
+  font-size: 72px;
+}
+.foll {
+  font-size: 40px;
+  color: #424242;
+}
+.num {
+  font-size: 30px;
+  color: #525151;
 }
 
 .postcard {

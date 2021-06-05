@@ -1,2 +1,83 @@
 <!-- this is the profile page 
 will render it once we figure out firebase -->
+{% extends "layout.html" %} {% load static%}
+<!---->
+{% block title%}Profile{%endblock%} {% block links %}
+<link href="{% static 'gram/css/profile.css' %}" rel="stylesheet" />
+
+{% endblock %}
+<!---->
+{% block main %}
+<div class="container card">
+  <div class="card-title poppin username align-self-center">
+    {{ displayName }}
+  </div>
+
+  <div class="d-flex justify-content-around">
+    <div class="poppin pr-3 foll">Followers</div>
+    <div class="poppin pr-3 foll">Following</div>
+  </div>
+  <div class="d-flex justify-content-around">
+    <span class="poppin num">{{followers}}</span>
+    <span class="poppin num">{{following}}</span>
+  </div>
+  {% if toFollow %}
+  <button
+    type="button"
+    class="btn btn-outline-info btn-lg align-self-center mb-4"
+  >
+    Follow
+  </button>
+  {% endif %}
+</div>
+
+<div class="container w-50 mt-5">
+  <!-- this contains all the cards -->
+
+  {% for dic in postlist %}
+  <!--just a comment-->
+  {% for key,value in dic.items %}
+  <div class="card postcard mb-5" id="{{ key }}">
+    <div class="row">
+      <div class="col-3">
+        <img src="{{value.imagelink}}" class="postimg" alt="" />
+      </div>
+      <div class="col-9 mt-4">
+        <span class="mb-2 card-subtitle author row"
+          >{{ value.displayName }}</span
+        >
+        <span class="mb-4 card-subtitle ml-3 row"
+          >🎵 {{ value.songname }} - {{ value.artist }}</span
+        >
+        <span class="mb-3 card-text row">{{value.caption}}</span>
+        <div class="iconCom">
+          <div>
+            <img
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/hearts.png"
+            />
+            {{value.likes}} likes
+          </div>
+          <div>
+            <a href="{{ value.songlink }}">
+              <img
+                class="iconbar"
+                src="https://img.icons8.com/ios-filled/50/000000/spotify.png"
+              />
+            </a>
+          </div>
+
+          <div style="margin-left: auto">
+            <img
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/bookmark-ribbon.png"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %} {% endfor %}
+</div>
+
+{% endblock %}

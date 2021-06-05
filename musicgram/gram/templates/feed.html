@@ -2,8 +2,60 @@
 {% block links %}
 <link href="{% static 'gram/css/feed.css' %}" rel="stylesheet" />
 
-{% endblock %} {% block main %}
+{% endblock %}
 
-<span class="displayname m-4"> Hi, {{ username }}</span>
+<!---->
+{% block main %}
+<div class="container ml-4" style="position: fixed">
+  <span class="displayname"> Hi, {{ username }}</span>
+</div>
+<div class="container w-50 mt-5">
+  <!-- this contains all the cards -->
+
+  {% for dic in postlist %}
+  <!--just a comment-->
+  {% for key,value in dic.items %}
+  <div class="card postcard mb-5" id="{{ key }}">
+    <div class="row">
+      <div class="col-3">
+        <img src="{{value.imagelink}}" class="postimg" alt="" />
+      </div>
+      <div class="col-9 mt-4">
+        <span class="mb-2 card-subtitle author row"
+          >{{ value.displayName }}</span
+        >
+        <span class="mb-4 card-subtitle ml-3 row"
+          >🎵 {{ value.songname }} - {{ value.artist }}</span
+        >
+        <span class="mb-3 card-text row">{{value.caption}}</span>
+        <div class="iconCom">
+          <div>
+            <img
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/hearts.png"
+            />
+            {{value.likes}} likes
+          </div>
+          <div>
+            <a href="{{ value.songlink }}">
+              <img
+                class="iconbar"
+                src="https://img.icons8.com/ios-filled/50/000000/spotify.png"
+              />
+            </a>
+          </div>
+
+          <div style="margin-left: auto">
+            <img
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/bookmark-ribbon.png"
+            />
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% endfor %} {% endfor %}
+</div>
 
 {% endblock %}
