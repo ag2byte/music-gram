@@ -5,10 +5,19 @@ will render it once we figure out firebase -->
 {% block title%}Profile{%endblock%} {% block links %}
 <link href="{% static 'gram/css/profile.css' %}" rel="stylesheet" />
 
+{% endblock %} {% block scripts %}
+
+<script src="{% static 'gram/js/follow.js'%}"></script>
+
 {% endblock %}
 <!---->
 {% block main %}
-<div class="container card">
+<div
+  class="container card"
+  id="profilecard"
+  data-name="{{displayName}}"
+  data-myname="{{request.session.displayName}}"
+>
   <div class="card-title poppin username align-self-center">
     {{ displayName }}
   </div>
@@ -18,12 +27,14 @@ will render it once we figure out firebase -->
     <div class="poppin pr-3 foll">Following</div>
   </div>
   <div class="d-flex justify-content-around">
-    <span class="poppin num">{{followers}}</span>
-    <span class="poppin num">{{following}}</span>
+    <span id="followers" class="poppin num">{{followers}}</span>
+    <span id="following" class="poppin num">{{following}}</span>
   </div>
   {% if toFollow %}
   <button
     type="button"
+    id="followbutton"
+    onclick="follow()"
     class="btn btn-outline-info btn-lg align-self-center mb-4"
   >
     Follow
