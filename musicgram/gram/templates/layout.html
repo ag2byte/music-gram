@@ -23,14 +23,14 @@
     {% block scripts %}{% endblock %}
   </head>
   <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top mb-4" >
         <div class="container-fluid">
             <span class="navbar-brand">Musicgram</span>
             
                 <a href="{% url 'feed' %}" ><img id = 'home'src="https://img.icons8.com/fluent-systems-regular/24/000000/home.png"/> </a>
                 <a href="{% url 'addpost' %}"><img id = 'addpost'src="https://img.icons8.com/fluent-systems-regular/24/000000/plus.png"/> </a>
                 <a href=""> <img id = 'bookmark'src="https://img.icons8.com/fluent-systems-regular/24/000000/bookmark-ribbon--v1.png"/></a>
-                <a > <img id = 'profile' src="https://img.icons8.com/fluent-systems-regular/24/000000/user.png"/></a>
+                <a href = "{% url 'profile' displayname=request.session.displayName %}"> <img id = 'profile' src="https://img.icons8.com/fluent-systems-regular/24/000000/user.png"/></a>
             
             <button class="btn btn-outline-info navbar-right " type="submit" onclick="location.href=`{% url 'logout' %}`">Log Out</button>
         </form>
@@ -38,7 +38,7 @@
         </div>
     </nav>
 
-    <main>
+    <main style="padding-top: 100px;">
         {% block main %}
         {% endblock %}
     </main>
