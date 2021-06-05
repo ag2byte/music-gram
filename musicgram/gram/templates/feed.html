@@ -21,8 +21,13 @@
         <img src="{{value.imagelink}}" class="postimg" alt="" />
       </div>
       <div class="col-9 mt-4">
-        <span class="mb-2 card-subtitle author row"
-          >{{ value.displayName }}</span
+        <a
+          href="{% url 'profile' displayname=value.displayName %}"
+          style="text-decoration: none; color: inherit"
+        >
+          <span class="mb-2 card-subtitle author row"
+            >{{ value.displayName }}</span
+          ></a
         >
         <span class="mb-4 card-subtitle ml-3 row"
           >🎵 {{ value.songname }} - {{ value.artist }}</span

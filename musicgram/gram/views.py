@@ -184,15 +184,19 @@ def createpost(request):
         return render(request,'createpost.html',{'song':song})
     except:
         return HttpResponse("Unauthorised to access the url")
-
-def follow():
+@csrf_exempt
+def follow(request):
     # this function is incomplete still as it will be connected to the frontend and the names' Abhi' and ' Gojou' will come from the frontend
     # however this is the basic function of following 
 
-    follower = firebasedb.child('users').order_by_child('displayName').equal_to('Abhi').limit_to_first(1).get().val()
+    to_be_followed = json.loads(request.body.decode('utf-8'))['to_be_followed']
+    followed_by = json.loads(request.body.decode('utf-8'))['followed_by']
+    print(to_be_followed,followed_by)
+
+    follower = firebasedb.child('users').order_by_child('displayName').equal_to(followed_by).limit_to_first(1).get().val()
     follower_id = list(follower)[0]  # this is the id finally
     follower_name = list(follower.values())[0].get('displayName')
-    followed = firebasedb.child('users').order_by_child('displayName').equal_to('Gojou').limit_to_first(1).get().val()
+    followed = firebasedb.child('users').order_by_child('displayName').equal_to(to_be_followed).limit_to_first(1).get().val()
     followed_id = list(followed)[0]
     followed_name = list(followed.values())[0].get('displayName')
     print('followerdet:', follower)
@@ -206,7 +210,8 @@ def follow():
 
     firebasedb.child('users').child(followed_id).child('followers').set({follower_id:follower_name})# adding follower for followed
     firebasedb.child('users').child(follower_id).child('following').set({followed_id:followed_name})# adding follwed for follower
-    
+    return JsonResponse({},status = 201)
+
     # end of db following feature
 
     
@@ -218,44 +223,47 @@ def search_song(request):
     print(final_result_list[0]['name'])
     return render(request, "addpost.html",{'link': final_result_list})
     
-# @csrf_exempt
+@csrf_exempt
 def testfunction(request):
-    print(request.session['displayName'])
-        
-    
-    
-    return HttpResponse("hello sir")
-   
+    to_be_followed = json.loads(request.body.decode('utf-8'))['to_be_followed']
+    followed_by = json.loads(request.body.decode('utf-8'))['followed_by']
+    print(to_be_followed,followed_by)
+    return JsonResponse({},status = 201)
+
      
 def profile(request,displayname):
     # get profile for a displayname 
-    user = firebasedb.child("users").order_by_child("displayName").equal_to(displayname).get()
-    
-    followers, following = 0,0
-
-    toFollow = True
-
-    if request.session['displayName'] == displayname:
-        toFollow = False
-    for i in user.each():
+    try:
+        user = firebasedb.child("users").order_by_child("displayName").equal_to(displayname).get()
         
-        if 'followers' in i.val():
-            followers = len(i.val()['followers'])
-            # check if there is a need to follow:
+        followers, following = 0,0
 
-            if request.session['userid'] in i.val()['followers'].keys():
-                # either is it own profile or already followed
-                print("same name")
-                toFollow = False
-        if 'following' in i.val():
-            following = len(i.val()['following'])
+        toFollow = True
 
-    posts = firebasedb.child("posts").order_by_child("displayName").equal_to(displayname).get()
-    postlist = []
-    for item in posts.each():
-            postlist.append({item.key():item.val()})
+        if request.session['displayName'] == displayname:
+            toFollow = False
+        for i in user.each():
+            
+            if 'followers' in i.val():
+                followers = len(i.val()['followers'])
+                # check if there is a need to follow:
+
+                if request.session['userid'] in i.val()['followers'].keys():
+                    # either is it own profile or already followed
+                    print("same name")
+                    toFollow = False
+            if 'following' in i.val():
+                following = len(i.val()['following'])
+
+        posts = firebasedb.child("posts").order_by_child("displayName").equal_to(displayname).get()
+        postlist = []
+        for item in posts.each():
+                postlist.append({item.key():item.val()})
 
 
-    print(i.key())
+        print(i.key())
 
-    return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist})
+        return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist})
+    except Exception as e:
+        print(e)
+        return HttpResponse("Something went wrong")
