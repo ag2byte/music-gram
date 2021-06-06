@@ -15,6 +15,10 @@ urlpatterns = [
     path('search_song', views.search_song, name='search_song'),
     path('follow', views.follow, name='follow'),
     path('unfollow', views.unfollow, name='unfollow'),
+    path('bookmarks', views.bookmarks, name='bookmarks'),
+    path('bookmark', views.bookmark, name='bookmark'),
+    path('unbookmark', views.unbookmark, name='unbookmark'),
+
     path('like', views.like, name='like'),
     path('unlike', views.unlike, name='unlike'),
     

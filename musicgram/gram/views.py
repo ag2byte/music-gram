@@ -137,11 +137,19 @@ def feed(request):
         for item in posts.each():
             postlist.append({item.key():item.val()})
         print(postlist.reverse())
+        bookmarklist = []
+        for i in posts.each():
+            if 'bookmarked_by' in i.val():
+                if request.session['userid'] in i.val()['bookmarked_by'].values():
+                    bookmarklist.append(i.key())
+            
+
+        print(bookmarklist)
         # print(postlist)
         # for dic in postlist:
         #     for i in dic:
         #         print(i,dic[i])
-        return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist})
+        return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
     except Exception as e: 
         print(e)
         return HttpResponse('You need to sign in to see this page')
@@ -165,11 +173,43 @@ def addpost(request):
         return HttpResponse('You need to sign in to see this page')
 
 def bookmarks(request):
-    # currentUser = firebaseauth.current_user
-    # if currentUser:
-    return render(request, 'bookmarks.html')
-    # else:
-    #     return HttpResponse('You need to sign in to see this page')
+    try:
+        # request.session['userid']):
+        likedposts = firebasedb.child('posts').order_by_child('likes').start_at(1).get()
+        likedlist = []
+        for i in likedposts.each():
+            skey  = i.key()
+            print("skey:",skey)
+            fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
+            for j in fposts:
+                if j.val() == request.session['userid']:
+                    print("jkey:",j.key())
+                    likedlist.append(i.key())
+
+        print(likedlist)
+        # if '-MbTM2E3G_-5Fp-cEIsZ' in likedlist:
+        #     print("yes")
+        posts = firebasedb.child("posts").get()
+        postlist = []
+        for item in posts.each():
+            postlist.append({item.key():item.val()})
+        print(postlist.reverse())
+        bookmarklist = []
+        for i in posts.each():
+            if 'bookmarked_by' in i.val():
+                if request.session['userid'] in i.val()['bookmarked_by'].values():
+                    bookmarklist.append(i.key())
+            
+
+        print(bookmarklist)
+        # print(postlist)
+        # for dic in postlist:
+        #     for i in dic:
+        #         print(i,dic[i])
+        return render(request, 'bookmarks.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
+    except Exception as e: 
+        print(e)
+        return HttpResponse('You need to sign in to see this page')
 
 
 # @csrf_exempt
@@ -314,19 +354,15 @@ def unlike(request):
 
 @csrf_exempt
 def testfunction(request):
-    # posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
-    # print(posts.val())
+    likedposts = firebasedb.child('posts').get()
+    bookmarklist = []
+    for i in likedposts.each():
+        if 'bookmarked_by' in i.val():
+            if request.session['userid'] in i.val()['bookmarked_by'].values():
+                bookmarklist.append(i.key())
+        
 
-    users = firebasedb.child("users").order_by_child("displayName").equal_to('Gojou').get()
-    following  = 0
-    for i in users.each():
-        print(i.val())
-        if 'followers' in i.val():
-            if request.session['userid'] in i.val()['followers'].values():
-                print("yes")
-    
-    print(following)
-    
+    print(bookmarklist)
    
     return HttpResponse("Hello tester")
 
@@ -374,7 +410,64 @@ def profile(request,displayname):
 
         print(i.key())
 
-        return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist,'likedlist':likedlist})
+        bookmarklist = []
+        for i in posts.each():
+            if 'bookmarked_by' in i.val():
+                if request.session['userid'] in i.val()['bookmarked_by'].values():
+                    bookmarklist.append(i.key())
+            
+
+        print(bookmarklist)
+        
+
+        return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
     except Exception as e:
         print(e)
         return HttpResponse("Something went wrong")
+
+
+
+@csrf_exempt
+def bookmark(request):
+    try:
+        songid = json.loads(request.body.decode('utf-8'))['songid']
+        
+        #  posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
+        # print(posts.val())
+
+        # firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').child('liked_by').push('Trko54p3ZHTYE2adoMsSi3')
+
+        song = firebasedb.child('posts').child(songid).get().val()
+        firebasedb.child('posts').child(songid).child('bookmarked_by').push(request.session['userid'])
+        print(song)
+
+        return JsonResponse({},status = 201)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Something went wrong')
+
+
+@csrf_exempt
+def unbookmark(request):
+    try:
+        songid = json.loads(request.body.decode('utf-8'))['songid']
+        song = firebasedb.child('posts').child(songid).get().val()
+        posts = firebasedb.child('posts').child(songid).child('bookmarked_by').get()
+        rkey = ''
+        for i in posts:
+            if i.val() == request.session['userid']:
+                rkey = i.key()
+                break
+        # now delete the like
+
+    
+        print(rkey)
+
+        firebasedb.child('posts').child(songid).child('bookmarked_by').child(rkey).remove()
+        
+        print(song)
+
+        return JsonResponse({},status = 201)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Something went wrong')

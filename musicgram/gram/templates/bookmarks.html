@@ -1,10 +1,106 @@
 {% extends "layout.html" %} {% load static%}
 <!-- title  -->
-{% block title%}Bookmarks{%endblock%}
+{% block title%}Bookmarks{%endblock%} {% block links %}
+<link href="{% static 'gram/css/feed.css' %}" rel="stylesheet" />
+
+{% endblock %} {% block scripts %}
+
+<script src="{% static 'gram/js/like.js'%}"></script>
+<script src="{% static 'gram/js/bookmark.js'%}"></script>
+
+{% endblock %}
+
 <!-- Bookmarks page  -->
 
-{% block main %}
+{% block main %} {% if bookmarklist|length == 0%}
 <div class="text-center">
   <span class="text-center">Bookmarks are empty right now</span>
 </div>
-{% endblock %}
+{% else %}
+<div class="container w-50 mt-5">
+  <!-- this contains all the cards -->
+
+  {% for dic in postlist %}
+  <!--just a comment-->
+  {% for key,value in dic.items %} {% if key in bookmarklist %}
+  <div class="card postcard mb-5" id="{{ key }}">
+    <div class="row">
+      <div class="col-3">
+        <img src="{{value.imagelink}}" class="postimg" alt="" />
+      </div>
+      <div class="col-9 mt-4">
+        <a
+          href="{% url 'profile' displayname=value.displayName %}"
+          style="text-decoration: none; color: inherit"
+        >
+          <span class="mb-2 card-subtitle author row"
+            >{{ value.displayName }}</span
+          ></a
+        >
+        <span class="mb-4 card-subtitle ml-3 row"
+          >🎵 {{ value.songname }} - {{ value.artist }}</span
+        >
+        <span class="mb-3 card-text row">{{value.caption}}</span>
+        <div class="iconCom">
+          <div id="likes-{{key}}">
+            {% if key in likedlist %}
+
+            <img
+              id="img-{{key}}"
+              data-songid="{{ key}}"
+              data-isliked="true"
+              onclick="likeunlike(this.getAttribute('data-songid'), this.getAttribute('data-isliked'))"
+              class="iconbar"
+              src="https://img.icons8.com/cotton/64/000000/like--v3.png"
+            />
+            {{value.likes}} {% else %}
+
+            <img
+              id="img-{{key}}"
+              data-songid="{{ key}}"
+              data-isliked="false"
+              onclick="likeunlike(this.getAttribute('data-songid'), this.getAttribute('data-isliked'))"
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/hearts.png"
+            />
+            {{value.likes}} {% endif %}
+          </div>
+          <div>
+            <a href="{{ value.songlink }}">
+              <img
+                class="iconbar"
+                src="https://img.icons8.com/ios-filled/50/000000/spotify.png"
+              />
+            </a>
+          </div>
+
+          <div style="margin-left: auto">
+            {% if key not in bookmarklist %}
+            <img
+              id="bom-{{key}}"
+              data-songid="{{ key}}"
+              data-bmd="false"
+              onclick="bookmark(this.getAttribute('data-songid'), this.getAttribute('data-bmd'))"
+              class="iconbar"
+              src="https://img.icons8.com/ios/50/000000/bookmark-ribbon.png"
+            />
+            {% else %}
+            <img
+              id="bom-{{key}}"
+              data-songid="{{ key}}"
+              data-bmd="true"
+              onclick="bookmark(this.getAttribute('data-songid'), this.getAttribute('data-bmd'))"
+              class="iconbar"
+              src="https://img.icons8.com/ios-filled/50/000000/bookmark-ribbon.png"
+            />
+
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {% endif %} {% endfor %} {% endfor %}
+</div>
+{%endif %} {% endblock %}
