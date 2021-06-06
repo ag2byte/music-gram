@@ -14,5 +14,8 @@ urlpatterns = [
     path('createpost', views.createpost, name='createpost'),
     path('search_song', views.search_song, name='search_song'),
     path('follow', views.follow, name='follow'),
+    path('unfollow', views.unfollow, name='unfollow'),
+    path('like', views.like, name='like'),
+    path('unlike', views.unlike, name='unlike'),
     
 ]
