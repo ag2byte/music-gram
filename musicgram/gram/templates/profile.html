@@ -9,6 +9,7 @@ will render it once we figure out firebase -->
 
 <script src="{% static 'gram/js/follow.js'%}"></script>
 <script src="{% static 'gram/js/like.js'%}"></script>
+<script src="{% static 'gram/js/bookmark.js'%}"></script>
 
 {% endblock %}
 <!---->
@@ -85,7 +86,8 @@ will render it once we figure out firebase -->
             <img
               id="img-{{key}}"
               data-songid="{{ key}}"
-              onclick="unlike(this.getAttribute('data-songid'))"
+              data-isliked="true"
+              onclick="likeunlike(this.getAttribute('data-songid'), this.getAttribute('data-isliked'))"
               class="iconbar"
               src="https://img.icons8.com/cotton/64/000000/like--v3.png"
             />
@@ -94,7 +96,8 @@ will render it once we figure out firebase -->
             <img
               id="img-{{key}}"
               data-songid="{{ key}}"
-              onclick="like(this.getAttribute('data-songid'))"
+              data-isliked="false"
+              onclick="likeunlike(this.getAttribute('data-songid'), this.getAttribute('data-isliked'))"
               class="iconbar"
               src="https://img.icons8.com/ios/50/000000/hearts.png"
             />
@@ -113,10 +116,26 @@ will render it once we figure out firebase -->
           </div>
 
           <div style="margin-left: auto">
+            {% if key not in bookmarklist %}
             <img
+              id="bom-{{key}}"
+              data-songid="{{ key}}"
+              data-bmd="false"
+              onclick="bookmark(this.getAttribute('data-songid'), this.getAttribute('data-bmd'))"
               class="iconbar"
               src="https://img.icons8.com/ios/50/000000/bookmark-ribbon.png"
             />
+            {% else %}
+            <img
+              id="bom-{{key}}"
+              data-songid="{{ key}}"
+              data-bmd="true"
+              onclick="bookmark(this.getAttribute('data-songid'), this.getAttribute('data-bmd'))"
+              class="iconbar"
+              src="https://img.icons8.com/ios-filled/50/000000/bookmark-ribbon.png"
+            />
+
+            {% endif %}
           </div>
         </div>
       </div>
