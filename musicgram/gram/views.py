@@ -118,16 +118,30 @@ def feed(request):
    
     try:
         # request.session['userid']):
+        likedposts = firebasedb.child('posts').order_by_child('likes').start_at(1).get()
+        likedlist = []
+        for i in likedposts.each():
+            skey  = i.key()
+            print("skey:",skey)
+            fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
+            for j in fposts:
+                if j.val() == request.session['userid']:
+                    print("jkey:",j.key())
+                    likedlist.append(i.key())
+
+        print(likedlist)
+        # if '-MbTM2E3G_-5Fp-cEIsZ' in likedlist:
+        #     print("yes")
         posts = firebasedb.child("posts").get()
         postlist = []
         for item in posts.each():
             postlist.append({item.key():item.val()})
-        print(postlist)
+        print(postlist.reverse())
         # print(postlist)
         # for dic in postlist:
         #     for i in dic:
         #         print(i,dic[i])
-        return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist})
+        return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist})
     except Exception as e: 
         print(e)
         return HttpResponse('You need to sign in to see this page')
@@ -167,7 +181,7 @@ def createpost(request):
         print("song from createpost", song)
         if request.method == 'POST':
             caption = request.POST['caption']
-            id = suid.uuid()
+            # id = suid.uuid()
             data = {'displayName':request.session['displayName'], 
                                             'caption':caption, 
                                             'songname':song['songname'],
@@ -178,7 +192,7 @@ def createpost(request):
                                             # 'datetime':datetime.datetime.now()
                                              } 
             print(id, data)
-            firebasedb.child('posts').child(id).set(data)
+            firebasedb.child('posts').push(data)
             return HttpResponseRedirect(reverse('feed'))
 
         return render(request,'createpost.html',{'song':song})
@@ -208,13 +222,38 @@ def follow(request):
     
     # adding Abhi as the follower of Gojou
 
-    firebasedb.child('users').child(followed_id).child('followers').set({follower_id:follower_name})# adding follower for followed
-    firebasedb.child('users').child(follower_id).child('following').set({followed_id:followed_name})# adding follwed for follower
+    firebasedb.child('users').child(followed_id).child('followers').push(follower_id)# adding follower for followed
+    firebasedb.child('users').child(follower_id).child('following').push(followed_id)# adding follwed for follower
     return JsonResponse({},status = 201)
 
     # end of db following feature
 
+
+@csrf_exempt
+def unfollow(request):
+    to_be_followed = json.loads(request.body.decode('utf-8'))['to_be_followed']
+    followed_by = json.loads(request.body.decode('utf-8'))['followed_by']
+    print(to_be_followed,followed_by)
+
+    follower = firebasedb.child('users').order_by_child('displayName').equal_to(followed_by).limit_to_first(1).get().val()
+    follower_id = list(follower)[0]  # this is the id finally
+    follower_name = list(follower.values())[0].get('displayName')
+    followed = firebasedb.child('users').order_by_child('displayName').equal_to(to_be_followed).limit_to_first(1).get().val()
+    followed_id = list(followed)[0]
+    followed_name = list(followed.values())[0].get('displayName')
+    print('followerdet:', follower)
+    print('followername:',follower_name )
+    print('followerid', follower_id)
+    print('followed:',followed)
+    print('followedid :', followed_id)
+    print('followedname:',followed_name )
     
+    # adding Abhi as the follower of Gojou
+
+    firebasedb.child('users').child(followed_id).child('followers').child(follower_id).remove()# adding follower for followed
+    firebasedb.child('users').child(follower_id).child('following').child(followed_id).remove()# adding follwed for follower
+    return JsonResponse({},status = 201)
+
 def search_song(request):
     
     name =  request.POST['song_name']
@@ -222,13 +261,74 @@ def search_song(request):
     final_result_list = searchSong(name)
     print(final_result_list[0]['name'])
     return render(request, "addpost.html",{'link': final_result_list})
+
+@csrf_exempt
+def like(request):
+    try:
+        songid = json.loads(request.body.decode('utf-8'))['songid']
+        
+        #  posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
+        # print(posts.val())
+
+        # firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').child('liked_by').push('Trko54p3ZHTYE2adoMsSi3')
+
+        song = firebasedb.child('posts').child(songid).get().val()
+        firebasedb.child('posts').child(songid).child('liked_by').push(request.session['userid'])
+        
+        print(songid,request.session['userid'])
+        likes = song['likes']
+        firebasedb.child('posts').child(songid).update({'likes':likes+1})
+
+        return JsonResponse({},status = 201)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Something went wrong')
+
+
+@csrf_exempt
+def unlike(request):
+    try:
+        songid = json.loads(request.body.decode('utf-8'))['songid']
+        song = firebasedb.child('posts').child(songid).get().val()
+        posts = firebasedb.child('posts').child(songid).child('liked_by').get()
+        rkey = ''
+        for i in posts:
+            if i.val() == request.session['userid']:
+                rkey = i.key()
+        # now delete the like
+
     
+        print(rkey)
+
+        firebasedb.child('posts').child(songid).child('liked_by').child(rkey).remove()
+        
+        print(songid,request.session['userid'])
+        likes = song['likes']
+        firebasedb.child('posts').child(songid).update({'likes':likes-1})
+
+        return JsonResponse({},status = 201)
+    except Exception as e:
+        print(e)
+        return HttpResponse('Something went wrong')
+
+
 @csrf_exempt
 def testfunction(request):
-    to_be_followed = json.loads(request.body.decode('utf-8'))['to_be_followed']
-    followed_by = json.loads(request.body.decode('utf-8'))['followed_by']
-    print(to_be_followed,followed_by)
-    return JsonResponse({},status = 201)
+    # posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
+    # print(posts.val())
+
+    users = firebasedb.child("users").order_by_child("displayName").equal_to('Gojou').get()
+    following  = 0
+    for i in users.each():
+        print(i.val())
+        if 'followers' in i.val():
+            if request.session['userid'] in i.val()['followers'].values():
+                print("yes")
+    
+    print(following)
+    
+   
+    return HttpResponse("Hello tester")
 
      
 def profile(request,displayname):
@@ -238,23 +338,34 @@ def profile(request,displayname):
         
         followers, following = 0,0
 
-        toFollow = True
+        toFollow = 1
 
         if request.session['displayName'] == displayname:
-            toFollow = False
+            toFollow = 0
         for i in user.each():
             
             if 'followers' in i.val():
                 followers = len(i.val()['followers'])
                 # check if there is a need to follow:
 
-                if request.session['userid'] in i.val()['followers'].keys():
+                if request.session['userid'] in i.val()['followers'].values():
                     # either is it own profile or already followed
                     print("same name")
-                    toFollow = False
+                    toFollow = -1
             if 'following' in i.val():
                 following = len(i.val()['following'])
+        likedposts = firebasedb.child('posts').order_by_child('likes').start_at(1).get()
+        likedlist = []
+        for i in likedposts.each():
+            skey  = i.key()
+            print("skey:",skey)
+            fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
+            for j in fposts:
+                if j.val() == request.session['userid']:
+                    print("jkey:",j.key())
+                    likedlist.append(i.key())
 
+        print(likedlist)
         posts = firebasedb.child("posts").order_by_child("displayName").equal_to(displayname).get()
         postlist = []
         for item in posts.each():
@@ -263,7 +374,7 @@ def profile(request,displayname):
 
         print(i.key())
 
-        return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist})
+        return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist,'likedlist':likedlist})
     except Exception as e:
         print(e)
         return HttpResponse("Something went wrong")

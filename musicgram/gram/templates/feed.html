@@ -2,6 +2,10 @@
 {% block links %}
 <link href="{% static 'gram/css/feed.css' %}" rel="stylesheet" />
 
+{% endblock %} {% block scripts %}
+
+<script src="{% static 'gram/js/like.js'%}"></script>
+
 {% endblock %}
 
 <!---->
@@ -34,12 +38,26 @@
         >
         <span class="mb-3 card-text row">{{value.caption}}</span>
         <div class="iconCom">
-          <div>
+          <div id="likes-{{key}}">
+            {% if key in likedlist %}
+
             <img
+              id="img-{{key}}"
+              data-songid="{{ key}}"
+              onclick="unlike(this.getAttribute('data-songid'))"
+              class="iconbar"
+              src="https://img.icons8.com/cotton/64/000000/like--v3.png"
+            />
+            {{value.likes}} {% else %}
+
+            <img
+              id="img-{{key}}"
+              data-songid="{{ key}}"
+              onclick="like(this.getAttribute('data-songid'))"
               class="iconbar"
               src="https://img.icons8.com/ios/50/000000/hearts.png"
             />
-            {{value.likes}} likes
+            {{value.likes}} {% endif %}
           </div>
           <div>
             <a href="{{ value.songlink }}">
