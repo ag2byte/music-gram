@@ -104,13 +104,14 @@ def signup(request):
         
         # adding into database
         id = suid.uuid()
-        data = {'displayName':displayName, 'email':email, 'posts': 0 } # 'followers':0, 'following':0,
+        data = {'displayName':displayName, 'email':email} # 'followers':0, 'following':0,
         
         print(id, data)
         firebasedb.child('users').child(id).set(data)
         # we need to add email verification as well
         # add success toast after this and redirect to login page
-
+        # return render(request,'index.html',{'errormessage':'Signup Successful! Lets log you in'}) 
+        return HttpResponseRedirect(reverse('index'))
         
     return render(request,'signup.html')
 
@@ -408,7 +409,7 @@ def profile(request,displayname):
                 postlist.append({item.key():item.val()})
 
 
-        print(i.key())
+        print(postlist.reverse())
 
         bookmarklist = []
         for i in posts.each():
