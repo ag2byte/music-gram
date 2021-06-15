@@ -37,7 +37,10 @@ The app is built using Django. For Firebase usage, a separate library called  [P
   
 ## Demo
 
-![](./gitimages/homepage/jpg)
+![](https://github.com/ag2byte/music-gram/blob/main/gitimages/homepage.jpg)
+![](https://github.com/ag2byte/music-gram/blob/main/gitimages/newpost.jpg)
+![](https://github.com/ag2byte/music-gram/blob/main/gitimages/profilepage.jpg)
+
 
   
 ## Acknowledgements
