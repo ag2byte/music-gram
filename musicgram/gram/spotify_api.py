@@ -3,8 +3,8 @@ import datetime
 from pprint import pprint
 from urllib.parse import urlencode
 import requests
-client_id = '46d058fd7fd24823a92ec77bcd794c23'
-client_secret = '3e43a088cfb9476fa0a1436e9dc8614b'
+client_id = 'YOUR_CLIENT_ID'
+client_secret = 'YOUR_CLIENT_SECRET_KEY'
 
 
 def milli(millis):

@@ -19,20 +19,20 @@ import pyrebase
 import datetime
 import json
 
-client_id = '46d058fd7fd24823a92ec77bcd794c23'
-client_secret = '3e43a088cfb9476fa0a1436e9dc8614b'
+client_id = 'YOUR_CLIENT_ID_SPOTIFY'
+client_secret = 'YOUR_CLIENT_SECRET_key'
 
-"firebase part : DO NOT MESS WITH THIS"
+
 firebaseconfig = {
-    'apiKey': "AIzaSyBHki4FC5c9dMPTf4gA_axvHQaezJoJN90",
-    'authDomain': "musicgram-69420.firebaseapp.com",
-    'projectId': "musicgram-69420",
-    'databaseURL': "https://musicgram-69420-default-rtdb.firebaseio.com",
+    'apiKey': "APIKEY",
+    'authDomain': "AUTHDOMAIN",
+    'projectId': "PROJECTID",
+    'databaseURL': "DATABASEURL",
 
-    'storageBucket': "musicgram-69420.appspot.com",
-    'messagingSenderId': "319646960925",
-    'appId': "1:319646960925:web:c67c9d32c9b02efb1725f4",
-    'measurementId': "G-WZHBNPQYRC"
+    'storageBucket': "STORAGEBUCKET",
+    'messagingSenderId': "MESSAGINGSENDERID",
+    'appId': "APPID",
+    'measurementId': "MEASUREMENTID"
 
 }
 
@@ -57,10 +57,9 @@ def index(request):
                 test = firebasedb.child("users").order_by_child('email').equal_to(user['email']).get()
                 request.session['useremail'] = user['email']
                 for i in test.each():
-                    print(i.key())
+                    
                     request.session['userid'] = i.key()
-                    print(i.val())
-                    print(i.val()['displayName'])
+                    
                     request.session['displayName'] = i.val()['displayName']
                     
                 session_id = user['idToken']
@@ -123,16 +122,14 @@ def feed(request):
         likedlist = []
         for i in likedposts.each():
             skey  = i.key()
-            print("skey:",skey)
+            
             fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
             for j in fposts:
                 if j.val() == request.session['userid']:
-                    print("jkey:",j.key())
+                    
                     likedlist.append(i.key())
 
-        print(likedlist)
-        # if '-MbTM2E3G_-5Fp-cEIsZ' in likedlist:
-        #     print("yes")
+    
         posts = firebasedb.child("posts").get()
         postlist = []
         for item in posts.each():
@@ -143,13 +140,7 @@ def feed(request):
             if 'bookmarked_by' in i.val():
                 if request.session['userid'] in i.val()['bookmarked_by'].values():
                     bookmarklist.append(i.key())
-            
-
-        print(bookmarklist)
-        # print(postlist)
-        # for dic in postlist:
-        #     for i in dic:
-        #         print(i,dic[i])
+     
         return render(request, 'feed.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
     except Exception as e: 
         print(e)
@@ -164,11 +155,11 @@ def addpost(request):
             request.session['newpostsong'] = song
             t = request.session['newpostsong']
             print("t",t)
-            #  createpost(request)
+            
             return JsonResponse({},status = 201)
 
 
-        # if currentUser:
+        
         return render(request, 'addpost.html')
     except:
         return HttpResponse('You need to sign in to see this page')
@@ -180,16 +171,15 @@ def bookmarks(request):
         likedlist = []
         for i in likedposts.each():
             skey  = i.key()
-            print("skey:",skey)
+            
             fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
             for j in fposts:
                 if j.val() == request.session['userid']:
-                    print("jkey:",j.key())
+                   
                     likedlist.append(i.key())
 
-        print(likedlist)
-        # if '-MbTM2E3G_-5Fp-cEIsZ' in likedlist:
-        #     print("yes")
+     
+      
         posts = firebasedb.child("posts").get()
         postlist = []
         for item in posts.each():
@@ -202,11 +192,6 @@ def bookmarks(request):
                     bookmarklist.append(i.key())
             
 
-        print(bookmarklist)
-        # print(postlist)
-        # for dic in postlist:
-        #     for i in dic:
-        #         print(i,dic[i])
         return render(request, 'bookmarks.html',{ 'username' : request.session['displayName'],'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
     except Exception as e: 
         print(e)
@@ -218,11 +203,11 @@ def createpost(request):
     try:
         currentuser = request.session['userid']
         song = request.session['newpostsong']
-        # print(request.session['newpostsong'])
+  
         print("song from createpost", song)
         if request.method == 'POST':
             caption = request.POST['caption']
-            # id = suid.uuid()
+     
             data = {'displayName':request.session['displayName'], 
                                             'caption':caption, 
                                             'songname':song['songname'],
@@ -230,9 +215,9 @@ def createpost(request):
                                             'imagelink':song['imagelink'],
                                             'songlink':song['songlink'],
                                             'likes':0,
-                                            # 'datetime':datetime.datetime.now()
+                                            
                                              } 
-            print(id, data)
+         
             firebasedb.child('posts').push(data)
             return HttpResponseRedirect(reverse('feed'))
 
@@ -241,8 +226,7 @@ def createpost(request):
         return HttpResponse("Unauthorised to access the url")
 @csrf_exempt
 def follow(request):
-    # this function is incomplete still as it will be connected to the frontend and the names' Abhi' and ' Gojou' will come from the frontend
-    # however this is the basic function of following 
+ 
 
     to_be_followed = json.loads(request.body.decode('utf-8'))['to_be_followed']
     followed_by = json.loads(request.body.decode('utf-8'))['followed_by']
@@ -261,13 +245,13 @@ def follow(request):
     print('followedid :', followed_id)
     print('followedname:',followed_name )
     
-    # adding Abhi as the follower of Gojou
+  
 
     firebasedb.child('users').child(followed_id).child('followers').push(follower_id)# adding follower for followed
     firebasedb.child('users').child(follower_id).child('following').push(followed_id)# adding follwed for follower
     return JsonResponse({},status = 201)
 
-    # end of db following feature
+
 
 
 @csrf_exempt
@@ -289,7 +273,7 @@ def unfollow(request):
     print('followedid :', followed_id)
     print('followedname:',followed_name )
     
-    # adding Abhi as the follower of Gojou
+
 
     firebasedb.child('users').child(followed_id).child('followers').child(follower_id).remove()# adding follower for followed
     firebasedb.child('users').child(follower_id).child('following').child(followed_id).remove()# adding follwed for follower
@@ -298,9 +282,9 @@ def unfollow(request):
 def search_song(request):
     
     name =  request.POST['song_name']
-    print(f'song name: {name} \n')
+   
     final_result_list = searchSong(name)
-    print(final_result_list[0]['name'])
+ 
     return render(request, "addpost.html",{'link': final_result_list})
 
 @csrf_exempt
@@ -308,11 +292,7 @@ def like(request):
     try:
         songid = json.loads(request.body.decode('utf-8'))['songid']
         
-        #  posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
-        # print(posts.val())
-
-        # firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').child('liked_by').push('Trko54p3ZHTYE2adoMsSi3')
-
+   
         song = firebasedb.child('posts').child(songid).get().val()
         firebasedb.child('posts').child(songid).child('liked_by').push(request.session['userid'])
         
@@ -339,11 +319,11 @@ def unlike(request):
         # now delete the like
 
     
-        print(rkey)
+       
 
         firebasedb.child('posts').child(songid).child('liked_by').child(rkey).remove()
         
-        print(songid,request.session['userid'])
+       
         likes = song['likes']
         firebasedb.child('posts').child(songid).update({'likes':likes-1})
 
@@ -353,19 +333,6 @@ def unlike(request):
         return HttpResponse('Something went wrong')
 
 
-@csrf_exempt
-def testfunction(request):
-    likedposts = firebasedb.child('posts').get()
-    bookmarklist = []
-    for i in likedposts.each():
-        if 'bookmarked_by' in i.val():
-            if request.session['userid'] in i.val()['bookmarked_by'].values():
-                bookmarklist.append(i.key())
-        
-
-    print(bookmarklist)
-   
-    return HttpResponse("Hello tester")
 
      
 def profile(request,displayname):
@@ -395,14 +362,14 @@ def profile(request,displayname):
         likedlist = []
         for i in likedposts.each():
             skey  = i.key()
-            print("skey:",skey)
+          
             fposts = firebasedb.child('posts').child(skey).child('liked_by').get()
             for j in fposts:
                 if j.val() == request.session['userid']:
-                    print("jkey:",j.key())
+                    
                     likedlist.append(i.key())
 
-        print(likedlist)
+     
         posts = firebasedb.child("posts").order_by_child("displayName").equal_to(displayname).get()
         postlist = []
         for item in posts.each():
@@ -418,7 +385,7 @@ def profile(request,displayname):
                     bookmarklist.append(i.key())
             
 
-        print(bookmarklist)
+       
         
 
         return render(request, "profile.html",{'displayName': displayname, 'followers':followers, 'following':following, 'toFollow':toFollow ,'postlist':postlist,'likedlist':likedlist,'bookmarklist':bookmarklist})
@@ -432,15 +399,10 @@ def profile(request,displayname):
 def bookmark(request):
     try:
         songid = json.loads(request.body.decode('utf-8'))['songid']
-        
-        #  posts = firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').get()
-        # print(posts.val())
-
-        # firebasedb.child('posts').child('-MbTJOqR3wFv0O3Db5vs').child('liked_by').push('Trko54p3ZHTYE2adoMsSi3')
-
+   
         song = firebasedb.child('posts').child(songid).get().val()
         firebasedb.child('posts').child(songid).child('bookmarked_by').push(request.session['userid'])
-        print(song)
+        
 
         return JsonResponse({},status = 201)
     except Exception as e:
@@ -462,11 +424,11 @@ def unbookmark(request):
         # now delete the like
 
     
-        print(rkey)
+      
 
         firebasedb.child('posts').child(songid).child('bookmarked_by').child(rkey).remove()
         
-        print(song)
+        
 
         return JsonResponse({},status = 201)
     except Exception as e:
